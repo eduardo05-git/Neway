@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter, usePathname } from "expo-router";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -11,7 +11,10 @@ const TABS: { name: string; label: string; icon: IoniconName; iconActive: Ionico
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function TabBar({ state, navigation }: any) {
+function TabBar({ state }: any) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <View
       style={{
@@ -28,7 +31,7 @@ function TabBar({ state, navigation }: any) {
         const routeIndex = state.routes.findIndex(
           (r: { name: string }) => r.name === tab.name || r.name.startsWith(tab.name)
         );
-        const isFocused = state.index === routeIndex;
+        const isFocused = state.index === routeIndex || pathname.includes(`/${tab.name}`);
 
         return (
           <TouchableOpacity
@@ -36,7 +39,7 @@ function TabBar({ state, navigation }: any) {
             style={{ flex: 1, alignItems: "center", gap: 4 }}
             activeOpacity={0.7}
             onPress={() => {
-              if (!isFocused) navigation.navigate(tab.name);
+              if (!isFocused) router.navigate(`/(tabs)/${tab.name}` as never);
             }}
           >
             {isFocused ? (
