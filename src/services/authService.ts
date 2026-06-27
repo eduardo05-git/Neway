@@ -53,6 +53,7 @@ export async function cadastrarAluno(input: CadastroAlunoInput): Promise<Usuario
     senha: input.senha,
     nivelAcesso: "ESTUDANTE",
   });
+  if (resUsuario.status === 409) throw new Error("EMAIL_JA_CADASTRADO");
   if (!resUsuario.ok) throw new Error("ERRO_USUARIO");
   const usuario: Usuario = await resUsuario.json();
 

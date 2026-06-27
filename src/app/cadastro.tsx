@@ -101,8 +101,10 @@ export default function CadastroScreen() {
     } catch (err: any) {
       if (err?.message === "ERRO_ALUNO") {
         setErro("Conta criada, mas não foi possível salvar seus dados de aluno.");
+      } else if (err?.message === "EMAIL_JA_CADASTRADO") {
+        setErro("Este e-mail já está cadastrado.");
       } else {
-        setErro("Erro no cadastro. Verifique os dados ou se o e-mail já existe.");
+        setErro("Erro no cadastro. Verifique os dados e tente novamente.");
       }
     } finally {
       setLoading(false);
@@ -161,21 +163,15 @@ export default function CadastroScreen() {
             </View>
           )}
 
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <View style={{ flex: 1 }}>
-              <Campo label="RM (matrícula)" placeholder="rm12345" value={rm} onChangeText={setRm} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Campo
-                label="Nascimento"
-                placeholder="DD/MM/AAAA"
-                keyboardType="numeric"
-                maxLength={10}
-                value={dataNascimento}
-                onChangeText={(v) => setDataNascimento(formatarDataDigitada(v))}
-              />
-            </View>
-          </View>
+          <Campo label="RM (matrícula)" placeholder="rm12345" value={rm} onChangeText={setRm} />
+          <Campo
+            label="Data de nascimento"
+            placeholder="DD/MM/AAAA"
+            keyboardType="numeric"
+            maxLength={10}
+            value={dataNascimento}
+            onChangeText={(v) => setDataNascimento(formatarDataDigitada(v))}
+          />
 
           <Campo label="Curso" placeholder="Ex: Informática" value={curso} onChangeText={setCurso} />
           <Campo label="Previsão de conclusão" placeholder="Ex: DEZEMBRO/2026" value={conclusao} onChangeText={setConclusao} />
