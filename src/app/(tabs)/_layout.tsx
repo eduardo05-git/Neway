@@ -5,9 +5,9 @@ import { Ionicons } from "@expo/vector-icons";
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 const TABS: { name: string; label: string; icon: IoniconName; iconActive: IoniconName }[] = [
-  { name: "jobs", label: "Jobs", icon: "briefcase-outline", iconActive: "briefcase" },
-  { name: "alerts", label: "Alerts", icon: "notifications-outline", iconActive: "notifications" },
-  { name: "profile", label: "Profile", icon: "person-outline", iconActive: "person" },
+  { name: "jobs", label: "Vagas", icon: "briefcase-outline", iconActive: "briefcase" },
+  { name: "alerts", label: "Alertas", icon: "notifications-outline", iconActive: "notifications" },
+  { name: "profile", label: "Perfil", icon: "person-outline", iconActive: "person" },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

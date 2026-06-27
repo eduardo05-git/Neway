@@ -6,23 +6,20 @@ import {
   FlatList,
   ActivityIndicator,
   StatusBar,
-  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { getNotifications, markAllAsRead } from "@/services/notificationsService";
-import type { Notification, NotificationType } from "@/mocks/notifications";
+import { useRouter } from "expo-router";
+import { getNotifications, markAllAsRead, type Notification, type NotificationType } from "@/services/notificationsService";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 const ICON_CONFIG: Record<NotificationType, { name: IoniconName; color: string; bg: string }> = {
-  job_match:          { name: "briefcase-outline",          color: "#1A6FE8", bg: "#DBEAFE" },
-  application_viewed: { name: "eye-outline",                color: "#7C3AED", bg: "#EDE9FE" },
-  interview:          { name: "calendar-outline",           color: "#6B7280", bg: "#F3F4F6" },
-  profile_alert:      { name: "information-circle-outline", color: "#EF4444", bg: "#FEE2E2" },
+  job_match:          { name: "briefcase-outline", color: "#1A6FE8", bg: "#DBEAFE" },
+  application_viewed: { name: "eye-outline",        color: "#7C3AED", bg: "#EDE9FE" },
 };
 
-function NotificationCard({ item }: { item: Notification }) {
+function NotificationCard({ item, onAction }: { item: Notification; onAction: (route: string) => void }) {
   const cfg = ICON_CONFIG[item.type];
 
   return (
@@ -83,32 +80,15 @@ function NotificationCard({ item }: { item: Notification }) {
           </View>
 
           {/* Descrição */}
-          <Text style={{ fontSize: 14, color: "#6B7280", lineHeight: 21, marginBottom: item.tag || item.actionLabel ? 14 : 0 }}>
+          <Text style={{ fontSize: 14, color: "#6B7280", lineHeight: 21, marginBottom: item.actionLabel ? 14 : 0 }}>
             {item.description}
           </Text>
 
-          {/* Tag de compatibilidade */}
-          {item.tag && (
-            <View style={{ marginBottom: item.actionLabel ? 12 : 0, alignSelf: "flex-start" }}>
-              <View
-                style={{
-                  backgroundColor: "#EFF6FF",
-                  borderRadius: 8,
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                }}
-              >
-                <Text style={{ fontSize: 12, color: "#1A6FE8", fontWeight: "600" }}>
-                  {item.tag}
-                </Text>
-              </View>
-            </View>
-          )}
-
           {/* Botão de ação */}
-          {item.actionLabel && (
+          {item.actionLabel && item.actionRoute ? (
             <TouchableOpacity
               activeOpacity={0.85}
+              onPress={() => onAction(item.actionRoute!)}
               style={{
                 alignSelf: "flex-start",
                 backgroundColor: "#1A6FE8",
@@ -121,7 +101,7 @@ function NotificationCard({ item }: { item: Notification }) {
                 {item.actionLabel}
               </Text>
             </TouchableOpacity>
-          )}
+          ) : null}
         </View>
       </View>
     </View>
@@ -133,6 +113,7 @@ type FlatItem =
   | { type: "item"; item: Notification };
 
 export default function AlertsScreen() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -148,8 +129,13 @@ export default function AlertsScreen() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  function handleAction(route: string) {
+    router.push(route as any);
+  }
+
   const todayItems = notifications.filter((n) => n.group === "today");
   const yesterdayItems = notifications.filter((n) => n.group === "yesterday");
+  const olderItems = notifications.filter((n) => n.group === "older");
 
   const flatData: FlatItem[] = [];
   if (todayItems.length > 0) {
@@ -159,6 +145,10 @@ export default function AlertsScreen() {
   if (yesterdayItems.length > 0) {
     flatData.push({ type: "header", title: "ONTEM" });
     yesterdayItems.forEach((n) => flatData.push({ type: "item", item: n }));
+  }
+  if (olderItems.length > 0) {
+    flatData.push({ type: "header", title: "ANTERIORES" });
+    olderItems.forEach((n) => flatData.push({ type: "item", item: n }));
   }
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -179,11 +169,7 @@ export default function AlertsScreen() {
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Image
-            source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
-            style={{ width: 42, height: 42, borderRadius: 21 }}
-          />
-          <Text style={{ fontSize: 20, fontWeight: "700", color: "#111827" }}>Neway</Text>
+          <Text style={{ fontSize: 20, fontWeight: "700", color: "#111827" }}>neway</Text>
         </View>
         <TouchableOpacity>
           <Ionicons name="options-outline" size={26} color="#374151" />
@@ -257,7 +243,7 @@ export default function AlertsScreen() {
                 </Text>
               );
             }
-            return <NotificationCard item={item.item} />;
+            return <NotificationCard item={item.item} onAction={handleAction} />;
           }}
           ListEmptyComponent={
             <View style={{ alignItems: "center", paddingVertical: 60 }}>
