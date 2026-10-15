@@ -56,6 +56,8 @@ export default function JobDetailScreen() {
   const [erroCandidatura, setErroCandidatura] = useState("");
 
   useEffect(() => {
+    setJaCandidatado(false);
+    setLoading(true);
     getVagaById(id).then((data) => {
       setVaga(data ?? null);
       setLoading(false);
@@ -63,6 +65,7 @@ export default function JobDetailScreen() {
   }, [id]);
 
   useEffect(() => {
+    setJaCandidatado(false);
     (async () => {
       const usuario = await getUsuarioLogado();
       if (!usuario) return;
@@ -115,7 +118,6 @@ export default function JobDetailScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
-      {/* ── Header ── */}
       <View style={{
         flexDirection: "row", alignItems: "center", justifyContent: "space-between",
         paddingHorizontal: 18, paddingVertical: 12,
@@ -139,7 +141,6 @@ export default function JobDetailScreen() {
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 18, paddingBottom: 130, gap: 14 }}>
 
-          {/* ── Card principal ── */}
           <View style={{ backgroundColor: "#fff", borderRadius: 24, padding: 24, ...SHADOW }}>
             <View style={{
               width: 76, height: 76, borderRadius: 20,
@@ -149,7 +150,6 @@ export default function JobDetailScreen() {
               <Ionicons name={visual.icon as any} size={36} color={visual.color} />
             </View>
 
-            {/* Tags */}
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
               {[vaga.area, vaga.modalidade].filter(Boolean).map((tag) => {
                 const tc = TAG_COLOR[tag as string] ?? { border: "#E5E7EB", text: "#6B7280", bg: "#F9FAFB" };
@@ -191,7 +191,6 @@ export default function JobDetailScreen() {
             </View>
           </View>
 
-          {/* ── Descrição da Vaga ── */}
           <View style={{ backgroundColor: "#fff", borderRadius: 24, padding: 22, ...SHADOW }}>
             <SectionTitle icon="document-text-outline" label="Descrição da Vaga" />
             <Text style={{ fontSize: 14, color: "#6B7280", lineHeight: 26 }}>
@@ -199,7 +198,6 @@ export default function JobDetailScreen() {
             </Text>
           </View>
 
-          {/* ── Requisitos ── */}
           {requisitos.length > 0 && (
             <View style={{ backgroundColor: "#fff", borderRadius: 24, padding: 22, ...SHADOW }}>
               <SectionTitle icon="checkmark-done-circle-outline" label="Requisitos" />
@@ -223,7 +221,6 @@ export default function JobDetailScreen() {
             </View>
           )}
 
-          {/* ── Sobre a empresa ── */}
           {vaga.empresaInformacao && (
             <View style={{ backgroundColor: "#fff", borderRadius: 24, padding: 22, ...SHADOW }}>
               <Text style={{
@@ -241,7 +238,6 @@ export default function JobDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* ── Bottom CTA ── */}
       <View style={{
         position: "absolute", bottom: 0, left: 0, right: 0,
         backgroundColor: "#fff",
